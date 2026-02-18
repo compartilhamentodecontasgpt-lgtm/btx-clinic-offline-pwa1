@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>BTX Prontuário</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div class="brandText">
+          <div class="brandName" id="brandName">BTX Prontuário</div>
+          <div class="brandSub" id="brandSub">Premium Offline</div>
+        </div>
+      </div>
+
+      <div class="topActions">
+        <button class="btn ghost" id="btnInstall" hidden>Instalar</button>
+        <button class="btn" id="btnQuickPrint">Imprimir</button>
+      </div>
+    </header>
+
+    <div class="shell">
+      <nav class="nav">
+        <button class="navItem active" data-view="agenda">Agenda</button>
+        <button class="navItem" data-view="patients">Pacientes</button>
+        <button class="navItem" data-view="record">Prontuário</button>
+        <button class="navItem" data-view="docs">Documentos</button>
+        <button class="navItem" data-view="backup">Backup</button>
+        <button class="navItem" data-view="settings">Config</button>
+      </nav>
+
+      <main class="main">
+        <!-- AGENDA -->
+        <section class="view" id="view-agenda">
+          <div class="pane">
+            <div class="paneHead">
+              <div class="paneTitle">Agenda</div>
+              <div class="paneActions">
+                <input class="field" id="agendaDate" type="date" />
+                <button class="btn primary" id="btnNewAppt">Novo</button>
+              </div>
+            </div>
+            <div class="paneBody">
+              <div class="table" id="agendaList"></div>
+            </div>
+          </div>
+
+          <div class="drawer" id="apptDrawer" hidden>
+            <div class="drawerHead">
+              <div class="drawerTitle" id="apptTitle">Novo agendamento</div>
+              <button class="btn ghost" id="btnCloseAppt">Fechar</button>
+            </div>
+            <div class="drawerBody">
+              <div class="grid2">
+                <div>
+                  <label class="lbl">Data</label>
+                  <input class="field" id="a_date" type="date" />
+                </div>
+                <div>
+                  <label class="lbl">Hora</label>
+                  <input class="field" id="a_time" type="time" />
+                </div>
+                <div>
+                  <label class="lbl">Paciente</label>
+                  <select class="field" id="a_patient"></select>
+                </div>
+                <div>
+                  <label class="lbl">Status</label>
+                  <select class="field" id="a_status">
+                    <option>Confirmado</option>
+                    <option>Aguardando</option>
+                    <option>Atendido</option>
+                    <option>Faltou</option>
+                    <option>Remarcado</option>
+                  </select>
+                </div>
+              </div>
+
+              <label class="lbl">Motivo / Procedimento</label>
+              <input class="field" id="a_reason" />
+
+              <label class="lbl">Observações</label>
+              <textarea class="field area" id="a_notes" rows="4"></textarea>
+
+              <div class="bar">
+                <button class="btn danger" id="btnDeleteAppt" hidden>Excluir</button>
+                <div class="grow"></div>
+                <button class="btn primary" id="btnSaveAppt">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PATIENTS -->
+        <section class="view" id="view-patients" hidden>
+          <div class="pane">
+            <div class="paneHead">
+              <div class="paneTitle">Pacientes</div>
+              <div class="paneActions">
+                <input class="field" id="patientSearch" placeholder="Buscar" />
+                <button class="btn primary" id="btnNewPatient">Novo</button>
+              </div>
+            </div>
+            <div class="paneBody">
+              <div class="table" id="patientsList"></div>
+            </div>
+          </div>
+
+          <div class="drawer" id="patientDrawer" hidden>
+            <div class="drawerHead">
+              <div class="drawerTitle" id="patientTitle">Novo paciente</div>
+              <button class="btn ghost" id="btnClosePatient">Fechar</button>
+            </div>
+            <div class="drawerBody">
+              <div class="grid2">
+                <div>
+                  <label class="lbl">Nome</label>
+                  <input class="field" id="p_name" />
+                </div>
+                <div>
+                  <label class="lbl">Telefone</label>
+                  <input class="field" id="p_phone" inputmode="tel" />
+                </div>
+                <div>
+                  <label class="lbl">Nascimento</label>
+                  <input class="field" id="p_birth" type="date" />
+                </div>
+                <div>
+                  <label class="lbl">Documento</label>
+                  <input class="field" id="p_doc" />
+                </div>
+              </div>
+
+              <label class="lbl">Observações</label>
+              <textarea class="field area" id="p_notes" rows="4"></textarea>
+
+              <div class="bar">
+                <button class="btn danger" id="btnDeletePatient" hidden>Excluir</button>
+                <div class="grow"></div>
+                <button class="btn primary" id="btnSavePatient">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RECORD -->
+        <section class="view" id="view-record" hidden>
+          <div class="pane">
+            <div class="paneHead">
+              <div class="paneTitle">Prontuário</div>
+              <div class="paneActions">
+                <select class="field" id="recordPatient"></select>
+              </div>
+            </div>
+
+            <div class="paneBody split">
+              <section class="card">
+                <div class="cardHead">
+                  <div class="cardTitle">Evolução</div>
+                  <button class="btn primary" id="btnAddEntry">Adicionar</button>
+                </div>
+                <div class="cardBody">
+                  <div class="entries" id="entries"></div>
+                </div>
+              </section>
+
+              <section class="card">
+                <div class="cardHead">
+                  <div class="cardTitle">Radiografias / Imagens</div>
+                  <label class="btn" for="rxInput">Adicionar</label>
+                  <input id="rxInput" type="file" accept="image/*" multiple hidden />
+                </div>
+                <div class="cardBody">
+                  <div class="gallery" id="rxGallery"></div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <div class="drawer" id="entryDrawer" hidden>
+            <div class="drawerHead">
+              <div class="drawerTitle" id="entryTitle">Nova evolução</div>
+              <button class="btn ghost" id="btnCloseEntry">Fechar</button>
+            </div>
+            <div class="drawerBody">
+              <div class="grid2">
+                <div>
+                  <label class="lbl">Data</label>
+                  <input class="field" id="e_date" type="date" />
+                </div>
+                <div>
+                  <label class="lbl">Tipo</label>
+                  <select class="field" id="e_type">
+                    <option>Consulta</option>
+                    <option>Procedimento</option>
+                    <option>Retorno</option>
+                    <option>Intercorrência</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+              </div>
+
+              <label class="lbl">Texto</label>
+              <textarea class="field area" id="e_text" rows="7"></textarea>
+
+              <div class="bar">
+                <button class="btn danger" id="btnDeleteEntry" hidden>Excluir</button>
+                <div class="grow"></div>
+                <button class="btn primary" id="btnSaveEntry">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DOCS -->
+        <section class="view" id="view-docs" hidden>
+          <div class="pane">
+            <div class="paneHead">
+              <div class="paneTitle">Documentos</div>
+              <div class="paneActions">
+                <select class="field" id="docType">
+                  <option value="rx">Receituário</option>
+                  <option value="fc">Ficha Clínica</option>
+                  <option value="at">Atestado</option>
+                  <option value="or">Orçamento</option>
+                </select>
+                <select class="field" id="docPatient"></select>
+                <button class="btn primary" id="btnPrintDoc">Baixar PDF</button>
+              </div>
+            </div>
+
+            <div class="paneBody docLayout">
+              <section class="docForm card">
+                <div class="cardHead">
+                  <div class="cardTitle">Dados</div>
+                  <button class="btn" id="btnSaveDoc">Salvar</button>
+                </div>
+                <div class="cardBody" id="docFields"></div>
+              </section>
+
+              <section class="docPaperWrap">
+                <div class="paper" id="paper">
+                  <div class="paperHead">
+                    <div class="paperBrand">
+                      <div class="paperMark" aria-hidden="true"></div>
+                      <div>
+                        <div class="paperName" id="profName">Profissional</div>
+                        <div class="paperMeta" id="profMeta">Registro • Contato</div>
+                      </div>
+                    </div>
+                    <div class="paperDoc" id="paperDocType">Documento</div>
+                  </div>
+                  <div class="paperBody" id="paperBody"></div>
+                  <div class="paperFoot">
+                    <div id="paperPlace">Belém – PA</div>
+                    <div id="paperDate"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <!-- BACKUP -->
+        <section class="view" id="view-backup" hidden>
+          <div class="pane">
+            <div class="paneHead">
+              <div class="paneTitle">Backup</div>
+              <div class="paneActions">
+                <button class="btn primary" id="btnExport">Exportar</button>
+                <label class="btn" for="importFile">Importar</label>
+                <input id="importFile" type="file" accept="application/json" hidden />
+                <button class="btn danger" id="btnWipe">Zerar</button>
+              </div>
+            </div>
+            <div class="paneBody">
+              <div class="mono" id="backupInfo"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="view" id="view-settings" hidden>
+          <div class="pane">
+            <div class="paneHead">
+              <div class="paneTitle">Configurações</div>
+              <div class="paneActions">
+                <button class="btn primary" id="btnSaveSettings">Salvar</button>
+              </div>
+            </div>
+            <div class="paneBody">
+              <div class="grid2">
+                <div>
+                  <label class="lbl">Nome do sistema</label>
+                  <input class="field" id="s_appName" />
+                </div>
+                <div>
+                  <label class="lbl">Subtítulo</label>
+                  <input class="field" id="s_appSub" />
+                </div>
+              </div>
+
+              <div class="sep"></div>
+
+              <div class="grid2">
+                <div>
+                  <label class="lbl">Nome do profissional</label>
+                  <input class="field" id="s_profName" />
+                </div>
+                <div>
+                  <label class="lbl">Registro (CRO/CRM)</label>
+                  <input class="field" id="s_profReg" />
+                </div>
+                <div>
+                  <label class="lbl">Telefone</label>
+                  <input class="field" id="s_profPhone" />
+                </div>
+                <div>
+                  <label class="lbl">E-mail</label>
+                  <input class="field" id="s_profEmail" />
+                </div>
+              </div>
+
+              <label class="lbl">Endereço</label>
+              <input class="field" id="s_profAddr" />
+
+              <div class="grid2">
+                <div>
+                  <label class="lbl">Cidade/UF</label>
+                  <input class="field" id="s_place" />
+                </div>
+                <div>
+                  <label class="lbl">Padrão de data</label>
+                  <select class="field" id="s_dateFmt">
+                    <option value="pt">DD/MM/AAAA</option>
+                    <option value="iso">AAAA-MM-DD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <div id="printArea" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
